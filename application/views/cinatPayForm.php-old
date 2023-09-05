@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<head>
+    <title>Signature for payment</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <style>
+        .container {
+            width: 500px;
+            clear: both;
+        }
+
+        .container input {
+            width: 100%;
+            clear: both;
+            margin-bottom: 20px;
+        }
+
+        .container select {
+            width: 100%;
+            clear: both;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div style="margin-top: 100px;" class="container">
+    <h4 style="color: #ff0000;"><?php echo validation_errors(); ?>
+</h4>
+    <!-- <h5 style="color: red;">Note: this is the demo (with test data) so phone and prefix can't be changed</h5> -->
+    <!-- <form class="form-group"
+action="https://api.cinetpay.com/v1/?method=getSignatureByPost" method="post">
+-->
+    <!-- <form class="form-group" action="https://developer.mmfinfotech.com/cinetPay_demo/payment.php" method="post"> -->
+    <form id="payment_form" class="form-group" method="post">
+        <label>Amount</label>
+        <input class="form-control" type="number" name="cpm_amount" placeholder="enter amount in numbers" value="100"/>
+        <label for="cpm_currency">Currancy</label>
+        <select id="cpm_currency" name="cpm_currency" class="form-select form-control"
+                aria-label="Default select example">
+            <option value="CFA">CFA</option>
+            <option value="XOF" selected>XOF</option>
+            <option value="XAF">XAF</option>
+        </select>
+        <label>Market</label>
+        <select name="cpm_Market" class="form-select form-control" aria-label="Default select example">
+            <option value="Cote" selected>Cote D’Ivoire</option>
+            <option value="Senegal">Senegal</option>
+            <option value="Mali">Mali</option>
+        </select>
+        <label>Operator</label>
+        <select name="cpm_Operator" class="form-select form-control" aria-label="Default select example">
+            <option value="Orange">Orange</option>
+            <option value="Moov">Moov</option>
+            <option value="MTN" selected>MTN</option>
+        </select>
+        <label>Transaction</label>
+        <input type="text" name="cpm_designation" value="demo_designation"/>
+        <input type="text" name="cpm_custom" id="cpm_custom" value=""/>
+        <label>phone</label>
+        <input type="text" name="cel_phone_num" value="0586160380"/>
+        <!-- <input type="text" name="cel_phone_num" value="0102452554"/> -->
+        <label>phone_prefixe</label>
+        <input type="text" name="cpm_phone_prefixe" value="225"/>
+        <label>Debug</label>
+        <input type="hidden" name="debug" value="0">
+
+        <button style="color: green;" name="submit" class="cinetpay-button large form-control">Proceed for payment
+        </button>
+    </form>
+</div>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        
+        // select option for wallet
+            $('#cpm_custom').val("{'payment_by':'<?php echo $payment_by; ?>','payment_to':'<?php echo $payment_to; ?>','payment_mode':'<?php echo $payment_mode; ?>','payment_for':'<?php echo $payment_for; ?>','reference_id':'<?php echo $reference_id; ?>','Wallet':'0'}");
+       
+            
+
+       $("#payment_form").submit(function(e){
+         e.preventDefault();
+          var fd = new FormData(document.getElementById("product_form"));
+        $.ajax({
+          type:'POST',
+          url: '<?= base_url("index.php/web/cinetpay/addPayment"); ?>',
+          data: fd,
+          processData: false,  // tell jQuery not to process the data
+          contentType: false ,
+          success:function(response){
+              var res = JSON.parse(response);
+             
+              if(res.status == false){
+                   toastr.error(res.msg);
+              }else if(res.status == true){
+                 toastr.success(res.msg); 
+                  $("#product_form")[0].reset();
+                //$('#out_list').DataTable().ajax.reload();
+                setTimeout(function(){ 
+window.location.href = '<?= base_url("admin/product/product_list"); ?>';
+                }, 2000);
+                
+              } 
+              
+          }
+        });
+    });
+
+        
+    });
+
+</script>

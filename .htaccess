@@ -1,0 +1,10 @@
+# Rewrite rules to remove index.php in uri in CI framework
+RewriteEngine on
+RewriteCond $1 !^(index\.php|resources|robots\.txt)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+
+# CI environment variable
+# Generally values are: production, development, testing(for localhost)
+#SetEnv CI_ENV testing
